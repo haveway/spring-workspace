@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="memberMapper">
+
+	<resultMap type="member" id="memberResultSet">
+		<result column="USER_ID" property="userId" />
+		<result column="USER_PWD" property="userPwd" />
+		<result column="USER_NAME" property="userName" />
+		<result column="EMAIL" property="email" />
+		<result column="GENDER" property="gender" />
+		<result column="AGE" property="age" />
+		<result column="PHONE" property="phone" />
+		<result column="ADDRESS" property="address" />
+		<result column="ENROLL_DATE" property="enrollDate" />
+		<result column="MODIFY_DATE" property="modifyDate" />
+		<result column="STATUS" property="status" />
+	</resultMap>
+	
+
+	<!-- 로그인용 쿼리문 -->
+	<select id="loginMember" parameterType="member" resultMap="memberResultSet">
+		SELECT
+				USER_ID,
+				USER_PWD,
+				USER_NAME,
+				EMAIL,
+				GENDER,
+				AGE,
+				PHONE,
+				ADDRESS,
+				ENROLL_DATE,
+				MODIFY_DATE,
+				STATUS
+		  FROM
+		  		MEMBER
+		 WHERE
+		 		USER_ID = #{userId}
+	  <!-- AND	USER_PWD = #{userPwd} -->
+		   AND
+		   		STATUS = 'Y'							
+	</select>
+	
+	<!-- 회원가입용 쿼리문 -->
+	<insert id="insertMember" parameterType="member">
+		INSERT
+		  INTO
+		  		MEMBER
+		  		(
+		  		USER_ID,
+				USER_PWD,
+				USER_NAME,
+				EMAIL,
+				GENDER,
+				AGE,
+				PHONE,
+				ADDRESS
+		  		)
+		VALUES
+				(
+				#{userId},
+				#{userPwd},
+				#{userName},
+				#{email},
+				#{gender},
+				#{age},
+				#{phone},
+				#{address}
+				)		
+	</insert>
+	
+	<!-- 회원정보수정 관련 쿼리문 -->
+	<update id="updateMember" parameterType="member">
+		UPDATE
+		  		MEMBER
+		   SET
+		   		USER_NAME = #{userName},
+		   		EMAIL = #{email},
+		   		AGE = #{age},
+		   		PHONE = #{phone},
+		   		ADDRESS = #{address},
+		   		GENDER = #{gender},
+		   		MODIFY_DATE = SYSDATE
+		 WHERE
+		 	    USER_ID = #{userId} 		
+	</update>
+	
+	<!-- 회원탈퇴관련 쿼리문 -->
+	<update id="deleteMember" parameterType="string">
+		UPDATE
+		  		MEMBER
+		   SET
+		   		STATUS = 'N'
+		 WHERE
+		 	    USER_ID = #{userId}
+	</update>
+	
+	<!-- 아이디 중복체크용 쿼리문 -->
+	<select id="idCheck" resultType="_int">
+		SELECT COUNT(*)
+		  FROM MEMBER
+		 WHERE USER_ID = #{checkId}
+		
+	</select>
+	
+	<insert id="insertSecret" parameterType="com.kh.spring.entity.CertVo">
+		INSERT INTO CERT(WHO, SECRET, WHEN)
+		VALUES (#{who}, #{secret}, SYSDATE)
+	</insert>
+	
+	<select id="validate" resultType="com.kh.spring.entity.CertVo" parameterType="com.kh.spring.entity.CertVo">
+		SELECT * FROM CERT
+		WHERE WHO = #{who}
+		  AND SECRET = #{secret}
+		  AND WHEN BETWEEN SYSDATE - 3/24/60 AND SYSDATE
+	</select>
+	
+	<delete id="remove">
+		DELETE CERT
+		 WHERE WHO = #{who}
+		   AND SECRET = #{secret}
+	</delete>
+	
+</mapper>

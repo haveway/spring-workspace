@@ -1,0 +1,247 @@
+
+*Spring 개발 환경 구축
+
+  JDK 설치, Tomcat 설치 (이미 설치했음)
+  Maven 설치
+	Apache Maven 사이트에 접속 
+	-> Download 클릭 
+	-> apache-maven-3.8.6-bin.zip 다운로드
+	-> 압축해제 후 apache-maven-3.8.6폴더를 dev폴더에 넣기
+	-> apache-maven-3.8.6폴더안에 repository 폴더 생성
+		(*repository : 받은 라이브러리 저장소 역할을 하는 폴더)
+	-> conf폴더안에 settings.xml파일 열기(메모장)
+	-> <settings> 안에 
+	    <localRepository>C:\dev\apache-maven-3.8.6\repository</localRepository> 추가
+		(*받은 라이브러리 저장폴더 지정)
+	-> https://download.springsource.com/release/STS/3.9.13.RELEASE/dist/e4.16/spring-tool-suite-3.9.13.RELEASE-e4.16.0-win32-x86_64.zip
+	    위의 경로로 접속해 압축파일 다운
+	-> 압축파일 이름을 s 로 변경 후 잘라내기
+	->  C드라이브에 붙여넣기
+	-> C드라이브에 압축해제   
+
+-------------------------------------------------------------------------
+
+*Spring 환경설정
+	Spring Tool Suite 3 실행
+  1. Servers의 가상 서버,  Explorer의 Servers폴더 삭제(우클릭 Delete 체크박스 체크)
+  2. Navigator 추가
+  3. [Window] - [Perspective] - [Customize Perspective] - [Shortcuts]
+	- General(Folder)  
+	- Java(Class, Interface, Package) 
+	- Spring(Spring Bean Configuration File, Spring Legacy Project) 
+	- Web(JSP File) / XML(XML File)
+  4. [Window] - [Preferences]
+	- 'enco' 검색 후 [Workspace] , [CSS Files], [HTML Files], [JSP Files], [XML Files]
+	   UTF-8로 변경 및 확인.
+	- 'JSON' 검색 후 [JSON Files] UTF-8로 변경.
+	- 'Spelling' 검색 후 [Spelling] UTF-8로 변경.
+	- [Server] / [Runtime Environments] 에 가상 서버 삭제(remove).
+	- Add 클릭해 Apache Tomcat v8.5 선택 후 체크박스 체크 
+	- [Next] - Apache Tomcat v8.5 경로 설정 - [Finish]
+	- 'code template' 검색 후 Code -> Catch block body 와 Method body 주석 제거
+	- [Maven] / [User Settings]에 User Settings를 [Browse...] 클릭해 settings.xml로 변경.
+	- [Team] / [Ignored Resources]에 [Add Pattern...] 클릭해 */target/* 추가.
+	--> [Apply and Close] 클릭.
+  5. 서버 설정
+     Servers의 추가된 Tomcat Server 클릭 후 Serve modules without publishing 체크 
+     포트번호 변경 후 저장.
+
+  6. Spring 설정
+	1_ Navigator 빈 공간에 우클릭 New - Spring Legacy Project 생성. 
+	2_ Project name 적고 Templates 맨 밑에 Spring MVC Project 클릭 후 Next
+	3_ 빈칸에 contextPath까지 적기 ex). com.kh.spring 
+	--> Finish 
+	4_ 만든 프로젝트 src/main/java/com/kh/'contextPath'/안에 HomeController.java 삭제.
+	    	          src/main/webapp/WEB-INF/views안에 home.jsp 삭제.
+	5_ Tomcat Server에 프로젝트 추가.
+	6_ 프로젝트 우클릭 후 [Properties] 클릭
+		[Deployment Assembly]에 Maven Dependencies 여부 확인.
+		[Project Facets]에 Java의 Version을 1.8 로 변경.
+		우측에 Runtimes 클릭 후 Apache Tomcat 체크 후 'Apply'
+		[Java Build Path] 에 jdk버전 바뀐지 확인 후 'Apply and Close'
+	
+	7_ pom.xml
+	
+	  7_1  java와 springframwork 버전 변경. 
+	       <properties>태그 안에 <java-version>을 1.8 로 변경.
+		     <org.springframework-version>을 5.3.14 로 변경.
+
+	  7_2 마지막 <dependency>태그 밑에 추가적으로 필요한 라이브러리 추가. (#검색)
+	     * ojdbc6 라이브러리(#ojdcb6)
+		<dependency>
+		    <groupId>oracle</groupId>
+    		    <artifactId>ojdbc6</artifactId>
+    		    <version>11.2.0.3</version>
+   		</dependency>
+
+	     * Spring에서 JDBC기능을 사용하기위한 라이브러리(#spring jdbc)
+		<dependency>
+    		   <groupId>org.springframework</groupId>
+    		   <artifactId>spring-jdbc</artifactId>
+    		   <version>${org.springframework-version}</version>
+			</dependency>
+
+	     * MyBatis 라이브러리(#mybatis)
+		<dependency>
+    		   <groupId>org.mybatis</groupId>
+    		   <artifactId>mybatis</artifactId>
+    		   <version>3.5.7</version>
+		</dependency>
+
+	     * Spring에서 MyBatis를 이용하기 위한 라이브러리(#mybatis spring)
+		<dependency>
+    		   <groupId>org.mybatis</groupId>
+   		   <artifactId>mybatis-spring</artifactId>
+ 		   <version>1.3.2</version>
+		</dependency>
+
+	     * Connection Pool을 사용하기 위한 라이브러리(#commons-dbcp)
+		<dependency>
+		    <groupId>commons-dbcp</groupId>
+		    <artifactId>commons-dbcp</artifactId>
+		    <version>1.4</version>
+		</dependency>
+
+	     * Lombok 라이브러리(#lombok)
+		<dependency>
+		    <groupId>org.projectlombok</groupId>
+		    <artifactId>lombok</artifactId>
+		    <version>1.18.12</version>
+		    <scope>provided</scope>
+		</dependency>
+		-> 저장해서 롬복을 다운로드 후  
+		   dev/apache-maven-3.8.6/repository/org/projectlombok/lombok-1.18.12 실행
+		   IDE 선택 후 [Install/Update] 클릭 후 닫고 IDE 재실행.
+		   
+	     * Spring Security Module 라이브러리 [core, web, config] (#spring-security)
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-core</artifactId>
+		    <version>5.5.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-web</artifactId>
+		    <version>5.5.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-config</artifactId>
+		    <version>5.5.2</version>
+		</dependency>
+
+		* 파일 업로드를 위한 라이브러리 (#commons-fileupload)
+		<dependency>
+		    <groupId>commons-fileupload</groupId>
+		    <artifactId>commons-fileupload</artifactId>
+		    <version>1.3.3</version>
+		</dependency>
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.6</version>
+		</dependency>
+
+	     * servlet, jsp 수정
+		javax.servlet 의 artifactId를 javax.servlet-api 로 
+				version을 4.0.1 로 변경.
+		javax.servlet.jsp의 artifactId를 javax.servlet.jsp-api 로
+				version을 2.3.3
+	     * plugin 수정
+		plugin configuration안에 source와 target을 1.8 로 변경.
+
+	8_ WEB-INF에 lib폴더 추가 후 taglibs .jar 파일 4개 추가하기.
+	
+	9_ MyBatis 설정
+	   9_1. [Window] - [Preferences] - [XML] - [XML Catalog]
+	     - config catalog 추가
+	   	Add 클릭 후 
+ 	    	Location : http://mybatis.org/dtd/mybatis-3-config.dtd 추가
+	    	KEY : -//mybatis.org//DTD Config 3.0//EN 추가
+
+	     - mapper catalog 추가
+	   	Add 클릭 후 
+ 	    	Location : http://mybatis.org/dtd/mybatis-3-mapper.dtd 추가
+	    	KEY : -//mybatis.org//DTD Mapper 3.0//EN 추가
+
+	     --> 'Apply and Close'
+	   
+	   9_2. mapper파일 먼저 생성 후 mybatis-config.xml생성 
+		src/main/resources 폴더 안에 mappers폴더 생성 후 
+		mappers폴더 안에 필요한 mapper.xml파일 생성
+		 next - DTD - Catalog(Mapper) 
+		
+		resources폴더 안에 mybatis-config.xml파일 생성
+		 next - DTD - Catalog(Config)
+	   
+	   9_3. mybatis-config.xml에 setting, typeAlias, mapper 작성
+		(environments, dataSource는 root-context.xml에 기술)  
+		
+
+	10_ web.xml
+	  * 필터(인코딩) 
+	   <filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>		
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	   </filter>	
+	   <filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	   </filter-mapping>
+
+	
+	11_ root-context.xml  
+	  * DB연결 설정 3단계
+	    1. DB연결을 위한 도구 설정 (beans안에 추가)
+		<bean class="org.apache.commons.dbcp.BasicDataSource" id="dataSource" destroy-method="close">
+		   <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		   <property name="url" value="jdbc:oracle:thin:@localhost:1521:xe" />
+		   <property name="username" value="SPRING" />
+		   <property name="password" value="SPRING" />
+		</bean>	
+
+	    2. MyBatis Spring에서 제공하는 SQL명령 실행을 위한 도구 등록
+		<bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+		   <property name="configLocation" value="classpath:mybatis-config.xml" />
+		   <property name="dataSource" ref="dataSource" />
+		</bean>	   
+
+	    3. Sql 구문 실행을 위한 템플릿을 제공하는 도구 등록
+		<bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSession">
+		   <constructor-arg ref="sqlSessionFactory" />
+		</bean>
+	    4. 파일 업로드 관련 빈 등록
+		<bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+		  <property name="maxUploadSize" value="100000000" />
+		  <property name="maxInMemorySize" value="100000000" />
+		</bean>
+			
+
+	12_ spring-security.xml
+	     WEB-INF/spring's 폴더 우클릭 new - Spring Bean Configuration File 생성
+		- File Name : spring-security.xml - Next
+		- beans 와 security 체크 후 - Finish
+	  
+	   * bean등록	
+	   <bean class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" id="bcryptPasswordEncoder" />
+	   * 서버 구동 시 바로 읽을 수 있게 web.xml에 /WEB-INF/spring/spring-security.xml 추가	
+		
+
+	13_ taglib 지시어 추가
+		[Window] - [Preferences] - [Web] - [JSP Files] - [Editor] - 
+		  [Template]에서 'New JSP Files (html 5)' 클릭 후 'Edit' 클릭 
+		  상단에 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 추가 
+		--> 'Apply and Close' 
+		
+	
+ 
+  		 	
+      
